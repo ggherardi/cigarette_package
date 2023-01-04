@@ -1,0 +1,136 @@
+// import React from 'react';
+// import ReactDOM from 'react-dom/client';
+// import './index.css';
+// import App from './App';
+// import reportWebVitals from './reportWebVitals';
+// import { useRef, useState } from 'react'
+// import {
+//   Camera,  
+//   Engine,
+//   Scene,
+//   useBeforeRender,
+//   useClick,
+//   useHover,
+// } from 'react-babylonjs'
+// import { Vector3, Color3, DynamicTexture, BaseTexture, Nullable, Mesh, StandardMaterial, Vector2, PolygonMeshBuilder } from '@babylonjs/core'
+
+// const DefaultScale = new Vector3(1, 1, 1)
+// const BiggerScale = new Vector3(1.25, 1.25, 1.25)
+
+// const SpinningBox = (props: any) => {
+//   // access Babylon scene objects with same React hook as regular DOM elements
+//   const boxRef = useRef<Nullable<Mesh>>(null);  
+//   const [clicked, setClicked] = useState(false)
+//   useClick(() => setClicked((clicked) => !clicked), boxRef)
+
+//   const [hovered, setHovered] = useState(false)
+//   useHover(
+//     () => setHovered(true),
+//     () => setHovered(false),
+//     boxRef
+//   )
+
+//   // This will rotate the box on every Babylon frame.
+//   useBeforeRender((scene) => {
+//     if (boxRef.current) {     
+//       let texture = new DynamicTexture("text", 256, scene);
+//       const material = new StandardMaterial("myMaterial", scene) ;
+//       material.diffuseTexture = texture;
+            
+//       texture.drawText("Immagine scelta", 30, 30, "bold 22px monospace", "black", "white", true, true);
+//       boxRef.current.material = material;
+//     }
+//   })
+//   return (
+//     <box
+//       onCollide={(a) => {console.log(a);}}
+//       name={props.name}
+//       ref={boxRef}
+//       height={4}
+//       width={2.85}
+//       depth={1.2}
+//       position={props.position}
+//       // scaling={clicked ? BiggerScale : DefaultScale}      
+//     >
+//       <standardMaterial                  
+//         name={`${props.name}-mat`}
+//         diffuseColor={hovered ? props.hoveredColor : props.color}
+//         specularColor={Color3.Black()}
+//       />
+//     </box>
+//   )
+// }
+
+// const playgroundPolygon = (props: any) => {
+//   // const scene = new Scene()
+//   const corners = [new Vector2(4, -4),
+//     new Vector2(2, 0),
+//     new Vector2(5, 2),
+//     new Vector2(1, 2),
+//     new Vector2(-5, 5),
+//     new Vector2(-3, 1),
+//     new Vector2(-4, -4),
+//     new Vector2(-2, -3),
+//     new Vector2(2, -3)
+//   ];
+//   const poly_tri = new PolygonMeshBuilder('polytri', corners);
+//   const polygon = poly_tri.build(false, 1);
+
+//   return polygon;
+// }
+
+// export const SceneWithSpinningBoxes = () => (
+//   <div>
+//     <Engine antialias adaptToDeviceRatio canvasId="babylonJS">
+//       <Scene>
+//         <arcRotateCamera
+//           name="camera1"
+//           target={new Vector3(-2, 0, 0)}          
+//           alpha={Math.PI / 2}
+//           beta={Math.PI / 4}
+//           radius={8}
+//         />
+//         <hemisphericLight
+//           name="light1"
+//           intensity={0.7}
+//           direction={Vector3.Up()}
+//         />
+//         <SpinningBox        
+//           name="left"
+//           position={new Vector3(-2, 0, 0)}
+//           color={Color3.FromHexString('#EEB5EB')}
+//           hoveredColor={Color3.FromHexString('#C26DBC')}
+//         />
+//       </Scene>
+//     </Engine>
+//   </div>
+// )
+
+// export const PlaygroundScene = () => (
+//   <div>
+//     <Engine antialias adaptToDeviceRatio canvasId='babylonJS'>
+//       <Scene>
+//         <arcRotateCamera
+//           name='camera1'
+//           target={new Vector3(-2, 0, 0)}
+//           alpha={Math.PI / 2}
+//           beta={Math.PI / 4}
+//           radius={8} 
+//         />
+//         {/* <playgroundPolygon /> */}
+        
+//       </Scene>
+//     </Engine>
+//   </div>
+// )
+
+// const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+// root.render(
+//   <div>
+//     <h1>Ciao Ale</h1>
+//     <React.StrictMode>    
+//       {SceneWithSpinningBoxes()}
+//     </React.StrictMode>
+//   </div>
+// );
