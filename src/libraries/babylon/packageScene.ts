@@ -7,8 +7,11 @@ import OpenPackage from "./openPackage";
 
 export default class PackageScene {
     private _openPackageInstance: OpenPackage;
+    private static _instance: PackageScene;
 
     constructor(imageUrl: string = '') {
+        PackageScene._instance = this; 
+
         // create the canvas html element and attach it to the webpage
         var canvas = document.createElement("canvas");
         canvas.style.width = "100%";
@@ -44,6 +47,10 @@ export default class PackageScene {
         engine.runRenderLoop(() => {
             scene.render();
         });
+    }
+
+    public static getInstance(imageUrl: string = '') {
+        return PackageScene._instance ? PackageScene._instance : new PackageScene(imageUrl);
     }
 
     public changeImage(newImageUrl: string) {
