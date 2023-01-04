@@ -8,6 +8,9 @@ import Utilities from "./utilities";
 export default class OpenPackage {
     private _scene: Scene;
     private _light: HemisphericLight;
+    private _imageUrl: string;
+
+    private _material: StandardMaterial;
 
     private _rotation_90_in_radians = 1.5708;
     private _package_width = 6;
@@ -18,12 +21,20 @@ export default class OpenPackage {
     private _open_package_height = this._closed_package_height - this._open_package_white_section_height;
     private _meshes: Mesh[] = [];
 
-    constructor(scene: Scene, light: HemisphericLight) {
+    constructor(scene: Scene, light: HemisphericLight, imageUrl: string) {
         this._scene = scene;
         this._light = light;
+        this._imageUrl = imageUrl;
+        this._material = new StandardMaterial('package_material', scene);                         
+        // Removing reflection from material
+        this._material.specularColor = new Color3(0, 0, 0);
+        this._material.diffuseTexture = new Texture(imageUrl, this._scene);
+
         this.buildMeshes();
+        this.applyMaterialToMeshes();
     }
 
+    // #region Corners
     // Package front corners
     private _open_package_front_corners = [ 
         // Bottom corner
@@ -137,6 +148,7 @@ export default class OpenPackage {
         new Vector2((this._package_width / 2), 1),
         new Vector2(-(this._package_width / 2), 1)
     ];
+    // #endregion
 
     private buildRoundSection() {
         // Package top side rounding function, WIP
@@ -152,12 +164,6 @@ export default class OpenPackage {
             j += increment;
         }
         console.log(open_package_top_round_corners);     
-    }
-
-    private makeInsideMesh(mesh: Mesh, flipNormals: boolean = false) {
-        let insideMesh = mesh.clone();
-        insideMesh.makeGeometryUnique()
-        mesh.flipFaces(flipNormals);
     }
 
     private buildMeshes() {
@@ -273,31 +279,27 @@ export default class OpenPackage {
         _package_lid_bottom_cover_mesh.translate(Utilities.Vector3.z, this._package_depth);
         _package_lid_bottom_cover_mesh.translate(Utilities.Vector3.y, this._open_package_height);
         this.makeInsideMesh(_package_lid_bottom_cover_mesh);
-        this._meshes.push(_package_lid_bottom_cover_mesh);    
-        
-        
-        // Creating standard material with texture
-        var mat = new StandardMaterial("mat", this._scene);
-        // Removing reflection from material
-        mat.specularColor = new Color3(0, 0, 0);
-        var texture = new Texture("https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1600", this._scene);
-        // var texture = new Texture("https://i.redd.it/4ydswzeokxp81.jpg", this._scene);
-        mat.diffuseTexture = texture;
+        this._meshes.push(_package_lid_bottom_cover_mesh);        
+    }
 
-        var mat2 = new StandardMaterial("mat2", this._scene);
-        // Removing reflection from material
-        mat2.specularColor = new Color3(0, 0, 0);
-        mat2.diffuseTexture = new Texture("https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/640px-A_black_image.jpg", this._scene);
-        // mat2.diffuseColor = new Color3(100, 100, 255);
-        lid_right_side_mesh.material = mat2;
+    private makeInsideMesh(mesh: Mesh, flipNormals: boolean = false) {
+        let insideMesh = mesh.clone();
+        insideMesh.makeGeometryUnique()
+        mesh.flipFaces(flipNormals);
+    }
 
+    private applyMaterialToMeshes() {
         for(let i = 0; i < this._meshes.length; i++) {
             let mesh: Mesh = this._meshes[i];
-            mesh.material = mat;            
+            mesh.material = this._material;            
         }
     }
 
     public getPolygons() {
         return this._meshes;
+    }
+
+    public changeImage(imageUrl: string) {
+        this._material.diffuseTexture = new Texture(imageUrl, this._scene);
     }
 }

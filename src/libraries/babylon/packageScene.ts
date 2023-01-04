@@ -1,12 +1,14 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, Vector2, PolygonMeshBuilder, StandardMaterial, Texture } from "@babylonjs/core";
-import earcut from 'earcut';
-import OpenPackage from './openPackage'
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight } from "@babylonjs/core";
+import OpenPackage from "./openPackage";
+// import OpenPackage from './openPackage'
 
 export default class PackageScene {
-    constructor() {
+    private _openPackageInstance: OpenPackage;
+
+    constructor(imageUrl: string = '') {
         // create the canvas html element and attach it to the webpage
         var canvas = document.createElement("canvas");
         canvas.style.width = "100%";
@@ -24,7 +26,7 @@ export default class PackageScene {
         light1.intensity = 1;       
 
         // Package builder
-        new OpenPackage(scene, light1);
+        this._openPackageInstance = new OpenPackage(scene, light1, imageUrl);
 
         // hide/show the Inspector
         window.addEventListener("keydown", (ev) => {
@@ -42,5 +44,9 @@ export default class PackageScene {
         engine.runRenderLoop(() => {
             scene.render();
         });
+    }
+
+    public changeImage(newImageUrl: string) {
+        this._openPackageInstance.changeImage(newImageUrl);
     }
 }
