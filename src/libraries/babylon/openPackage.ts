@@ -1,14 +1,18 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, Vector2, PolygonMeshBuilder, StandardMaterial, Texture, Color3 } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, Vector2, PolygonMeshBuilder, StandardMaterial, Texture, Color3, Animation, AnimationGroup } from "@babylonjs/core";
 import earcut from 'earcut';
 import Utilities from "./utilities";
+import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/gui";
 
 export default class OpenPackage {
     private _scene: Scene;
     private _light: HemisphericLight;
     private _imageUrl: string;
+    private _lidMesh: any;
+    private _meshes: Mesh[] = [];
+    private _lidMeshes: Mesh[] = [];
 
     private _material: StandardMaterial;
 
@@ -19,7 +23,6 @@ export default class OpenPackage {
     private _open_package_white_section_height = 2;
     private _lid_top_height = 3;
     private _open_package_height = this._closed_package_height - this._open_package_white_section_height;
-    private _meshes: Mesh[] = [];
 
     constructor(scene: Scene, light: HemisphericLight, imageUrl: string) {
         this._scene = scene;
@@ -32,6 +35,7 @@ export default class OpenPackage {
 
         this.buildMeshes();
         this.applyMaterialToMeshes();
+        this.createLidAnimation();
     }
 
     // #region Corners
@@ -177,6 +181,7 @@ export default class OpenPackage {
         // White section
         const open_package_front_white_section = new PolygonMeshBuilder('open_package_front_white_section', this._open_package_white_section_front_corners, this._scene, earcut);
         const open_package_front_white_section_mesh = open_package_front_white_section.build(false);
+        open_package_front_white_section_mesh.translate(Utilities.Vector3.y, -0.01);
         this.makeInsideMesh(open_package_front_white_section_mesh);
         // this._meshs.push(open_package_bottom_front_mesh);
 
@@ -185,14 +190,14 @@ export default class OpenPackage {
         const open_package_white_section_right_side_mesh = open_package_white_section_side.build(false);
         open_package_white_section_right_side_mesh.rotate(Utilities.Vector3.z, -this._rotation_90_in_radians);
         open_package_white_section_right_side_mesh.translate(Utilities.Vector3.x, -0.5);
-        open_package_white_section_right_side_mesh.translate(Utilities.Vector3.y, this._package_width / 2);
+        open_package_white_section_right_side_mesh.translate(Utilities.Vector3.y, (this._package_width / 2) - 0.01);
         this.makeInsideMesh(open_package_white_section_right_side_mesh);
 
         // White section left side
         const open_package_white_section_left_side_mesh = open_package_white_section_side.build(false);
         open_package_white_section_left_side_mesh.rotate(Utilities.Vector3.z, -this._rotation_90_in_radians);
         open_package_white_section_left_side_mesh.translate(Utilities.Vector3.x, -0.5);
-        open_package_white_section_left_side_mesh.translate(Utilities.Vector3.y, -(this._package_width / 2));
+        open_package_white_section_left_side_mesh.translate(Utilities.Vector3.y, -(this._package_width / 2) + 0.01);
         open_package_white_section_left_side_mesh.flipFaces();
         this.makeInsideMesh(open_package_white_section_left_side_mesh);
 
@@ -240,7 +245,7 @@ export default class OpenPackage {
         lid_right_side_mesh.translate(Utilities.Vector3.y, (this._package_width / 2));
         lid_right_side_mesh.rotate(Utilities.Vector3.y, this._rotation_90_in_radians);
         lid_right_side_mesh.flipFaces();
-        this.makeInsideMesh(lid_right_side_mesh);
+        const lid_right_side_inside_mesh = this.makeInsideMesh(lid_right_side_mesh);
         this._meshes.push(lid_right_side_mesh);
 
         // Lid left side
@@ -252,40 +257,103 @@ export default class OpenPackage {
         lid_left_side_mesh.translate(Utilities.Vector3.y, (this._package_width / 2));
         lid_left_side_mesh.rotate(Utilities.Vector3.y, -this._rotation_90_in_radians);
         lid_left_side_mesh.flipFaces();
-        this.makeInsideMesh(lid_left_side_mesh);
+        const lid_left_side_inside_mesh = this.makeInsideMesh(lid_left_side_mesh);
         this._meshes.push(lid_left_side_mesh);
 
         // Lid back cover
         const lid_back_cover = new PolygonMeshBuilder('lid_back_cover', this._package_lid_back_cover_corners, this._scene, earcut);
         const lid_back_cover_mesh = lid_back_cover.build(false);
         lid_back_cover_mesh.translate(Utilities.Vector3.y, -(this._package_depth) - 1);
-        this.makeInsideMesh(lid_back_cover_mesh);
+        const lid_back_cover_inside_mesh = this.makeInsideMesh(lid_back_cover_mesh);
         this._meshes.push(lid_back_cover_mesh);        
 
         // Lid top cover
         const _package_lid_top_cover = new PolygonMeshBuilder('lid_top_cover', this._package_lid_top_cover_corners, this._scene, earcut);
-        const _package_lid_top_cover_mesh = _package_lid_top_cover.build(false);
-        _package_lid_top_cover_mesh.rotate(Utilities.Vector3.x, this._rotation_90_in_radians);
-        _package_lid_top_cover_mesh.translate(Utilities.Vector3.y, (this._open_package_height / 2) + this._lid_top_height + this._open_package_white_section_height + ((this._lid_top_height - this._open_package_white_section_height) / 2));
-        _package_lid_top_cover_mesh.translate(Utilities.Vector3.z, 0.5);
-        _package_lid_top_cover_mesh.flipFaces();
-        this.makeInsideMesh(_package_lid_top_cover_mesh);
-        this._meshes.push(_package_lid_top_cover_mesh);        
+        const lid_top_cover_mesh = _package_lid_top_cover.build(false);
+        lid_top_cover_mesh.rotate(Utilities.Vector3.x, this._rotation_90_in_radians);
+        lid_top_cover_mesh.translate(Utilities.Vector3.y, (this._open_package_height / 2) + this._lid_top_height + this._open_package_white_section_height + ((this._lid_top_height - this._open_package_white_section_height) / 2));
+        lid_top_cover_mesh.translate(Utilities.Vector3.z, 0.5);
+        lid_top_cover_mesh.flipFaces();
+        const lid_top_cover_inside_mesh = this.makeInsideMesh(lid_top_cover_mesh);
+        this._meshes.push(lid_top_cover_mesh);        
 
         // Lid bottom cover
         const _package_lid_bottom_cover = new PolygonMeshBuilder('lid_bottom_cover', this._package_lid_bottom_cover_corners, this._scene, earcut);
-        const _package_lid_bottom_cover_mesh = _package_lid_bottom_cover.build(false);
-        _package_lid_bottom_cover_mesh.rotate(Utilities.Vector3.x, this._rotation_90_in_radians);
-        _package_lid_bottom_cover_mesh.translate(Utilities.Vector3.z, this._package_depth);
-        _package_lid_bottom_cover_mesh.translate(Utilities.Vector3.y, this._open_package_height);
-        this.makeInsideMesh(_package_lid_bottom_cover_mesh);
-        this._meshes.push(_package_lid_bottom_cover_mesh);        
+        const lid_bottom_cover_mesh = _package_lid_bottom_cover.build(false);
+        lid_bottom_cover_mesh.rotate(Utilities.Vector3.x, this._rotation_90_in_radians);
+        lid_bottom_cover_mesh.translate(Utilities.Vector3.z, this._package_depth);
+        lid_bottom_cover_mesh.translate(Utilities.Vector3.y, this._open_package_height);
+        const lid_bottom_cover_inside_mesh = this.makeInsideMesh(lid_bottom_cover_mesh);
+        this._meshes.push(lid_bottom_cover_mesh);      
+        
+        this._lidMeshes = [
+            lid_bottom_cover_mesh,
+            lid_top_cover_mesh,
+            lid_back_cover_mesh,
+            lid_right_side_mesh,
+            lid_left_side_mesh,
+            lid_back_cover_inside_mesh,
+            lid_bottom_cover_inside_mesh,
+            lid_left_side_inside_mesh,
+            lid_right_side_inside_mesh,
+            lid_top_cover_inside_mesh            
+        ];
+        this._lidMesh = Mesh.MergeMeshes(this._lidMeshes, true);
     }
 
-    private makeInsideMesh(mesh: Mesh, flipNormals: boolean = false) {
+    private createLidAnimation() {
+        if (this._lidMesh) {
+            this._lidMesh.material = this._material;
+            const lidRotationPivotPosition = new Vector3(0, -this._package_depth, 6);
+            this._lidMesh.setPivotPoint(lidRotationPivotPosition);            
+            const frameRate = 30;        
+            let startingPosition = 0;
+            let rotation = -(this._rotation_90_in_radians);
+            this.createButtonsGUI({
+                startingPosition: startingPosition,
+                rotation: rotation,
+                frameRate: frameRate,
+                mesh: this._lidMesh
+            });
+        }
+    }
+
+    private createButtonsGUI(customAnimObject: any) {
+        // Buttons
+        var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        var panel = new StackPanel();
+        panel.isVertical = false;
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;            
+        advancedTexture.addControl(panel);
+        var addButton = function (text: string, callback: any) {
+            var button = Button.CreateSimpleButton("button", text);
+            button.width = "140px";
+            button.height = "40px";
+            button.color = "white";
+            button.background = "green";
+            button.paddingLeft = "10px";
+            button.paddingRight = "10px";
+            button.onPointerUpObservable.add(function () {
+                callback()
+            });
+            panel.addControl(button);
+        }
+
+        addButton("Play", function () {
+            const endAnimationCallback = () => {
+                const tempStartingPosition = customAnimObject.startingPosition;
+                customAnimObject.startingPosition = customAnimObject.rotation;
+                customAnimObject.rotation = tempStartingPosition;
+            }
+            Animation.CreateAndStartAnimation('anim', customAnimObject.mesh, 'rotation.x', customAnimObject.frameRate, customAnimObject.frameRate, customAnimObject.startingPosition, customAnimObject.rotation, 0, undefined, endAnimationCallback);
+        });
+    }
+
+    private makeInsideMesh(mesh: Mesh, flipNormals: boolean = false): Mesh {
         let insideMesh = mesh.clone();
         insideMesh.makeGeometryUnique()
         mesh.flipFaces(flipNormals);
+        return insideMesh;
     }
 
     private applyMaterialToMeshes() {
