@@ -327,6 +327,7 @@ export default class OpenPackage {
         advancedTexture.addControl(panel);
         var addButton = function (text: string, callback: any) {
             var button = Button.CreateSimpleButton("button", text);
+            button.top = "400px";
             button.width = "140px";
             button.height = "40px";
             button.color = "white";
@@ -337,16 +338,26 @@ export default class OpenPackage {
                 callback()
             });
             panel.addControl(button);
+            return button;
         }
 
-        addButton("Play", function () {
+        let openButton = addButton("Chiudi", function () {
             const endAnimationCallback = () => {
                 const tempStartingPosition = customAnimObject.startingPosition;
                 customAnimObject.startingPosition = customAnimObject.rotation;
                 customAnimObject.rotation = tempStartingPosition;
+                openButton.isEnabled = true;
             }
             Animation.CreateAndStartAnimation('anim', customAnimObject.mesh, 'rotation.x', customAnimObject.frameRate, customAnimObject.frameRate, customAnimObject.startingPosition, customAnimObject.rotation, 0, undefined, endAnimationCallback);
+            if (openButton.textBlock) {
+                openButton.textBlock.text = openButton.textBlock.text === "Apri" ? "Chiudi" : "Apri";
+            }
+            openButton.isEnabled = false;
+        });        
+        let uploadImage = addButton("Carica immagine", function () {
+            
         });
+        uploadImage.isEnabled = false;
     }
 
     private makeInsideMesh(mesh: Mesh, flipNormals: boolean = false): Mesh {

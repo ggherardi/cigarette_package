@@ -16,6 +16,7 @@ export default class PackageScene {
         var canvas = document.createElement("canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
+        canvas.style.touchAction = "auto";
         canvas.id = "package_canvas";
         document.body.appendChild(canvas);
 
