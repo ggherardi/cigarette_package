@@ -6,7 +6,7 @@ import earcut from 'earcut';
 import Utilities from "./utilities";
 import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/gui";
 
-export default class OpenPackage {
+export default class Package {
     private _scene: Scene;
     private _light: HemisphericLight;
     private _imageUrl: string;
@@ -35,7 +35,8 @@ export default class OpenPackage {
 
         this.buildMeshes();
         this.applyMaterialToMeshes();
-        this.createLidAnimation();
+        // NEED TO MANAGE THIS IN SCENE
+        // this.createLidAnimation();
     }
 
     // #region Corners
@@ -327,7 +328,7 @@ export default class OpenPackage {
         advancedTexture.addControl(panel);
         var addButton = function (text: string, callback: any) {
             var button = Button.CreateSimpleButton("button", text);
-            button.top = "400px";
+            button.top = "-100px";
             button.width = "140px";
             button.height = "40px";
             button.color = "white";

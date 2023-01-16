@@ -1,5 +1,5 @@
 import * as React from 'react';
-import OpenPackageComponent from './OpenPackageComponent';
+import PackageComponent from './PackageComponent';
 
 export interface IMainComponentProps {
     image?: string;
@@ -41,8 +41,8 @@ export default class MainComponent extends React.Component<IMainComponentProps, 
                 <div>
                     <input type='checkbox' onClick={() => this.changeImage('')}></input>
                 </div>
-                <OpenPackageComponent 
-                    imageUrl={this.state.imageUrl}></OpenPackageComponent>
+                <PackageComponent 
+                    imageUrl={this.state.imageUrl}></PackageComponent>
             </div>
         );
     }
