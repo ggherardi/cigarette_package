@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PackageScene from '../babylon/packageScene';
+import PackageEngine from '../babylon/packageEngine';
 
 export interface IPackageComponentProps {
     imageUrl?: string;
@@ -8,11 +8,11 @@ export interface IPackageComponentProps {
 }
 
 export default class PackageComponent extends React.Component<IPackageComponentProps, {}> {
-    private _packageScene: PackageScene;
+    private _packageScene: PackageEngine;
 
     constructor(props: IPackageComponentProps) {
         super(props);
-        this._packageScene = PackageScene.getInstance(this.props.imageUrl);
+        this._packageScene = PackageEngine.getInstance(this.props.imageUrl);
     }
 
     componentDidUpdate(prevProps: IPackageComponentProps) {

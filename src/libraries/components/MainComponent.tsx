@@ -6,6 +6,8 @@ export interface IMainComponentProps {
 }
 
 export interface IMainComponentState {
+    isLoading?: boolean;
+    isOpenPackage?: boolean;
     imageUrl?: string;
 }
 
@@ -17,6 +19,7 @@ export default class MainComponent extends React.Component<IMainComponentProps, 
     constructor(props: IMainComponentProps) {
         super(props);
         this.state = {
+            isLoading: true,
             imageUrl: ''
         }
         this.switch = false;
@@ -25,8 +28,7 @@ export default class MainComponent extends React.Component<IMainComponentProps, 
     }
 
     async componentDidMount() {        
-        // let img = require('../../assets/images/124235523451.webp');
-        this.setState({ imageUrl: this.image1 });
+        this.setState({ imageUrl: this.image1, isLoading: false });
     }
 
     private async changeImage(imageUrl: string) {
@@ -35,14 +37,14 @@ export default class MainComponent extends React.Component<IMainComponentProps, 
         this.setState({ imageUrl: img });
     }
 
+    private async openPackageForUpload() {
+        this.setState({ isOpenPackage: !this.state.isOpenPackage });
+    }
+
     public render(): React.ReactElement<MainComponent> {
         return (
             <div className='card-body px-4'>
-                <div>
-                    <input type='checkbox' onClick={() => this.changeImage('')}></input>
-                </div>
-                <PackageComponent 
-                    imageUrl={this.state.imageUrl}></PackageComponent>
+                {!this.state.isLoading && (<PackageComponent imageUrl={this.state.imageUrl}></PackageComponent>)}
             </div>
         );
     }
