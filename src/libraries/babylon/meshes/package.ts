@@ -5,10 +5,10 @@ import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBu
 import earcut from 'earcut';
 import Utilities from "../utilities";
 import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/gui";
-import PackageEngine from "../packageEngine";
 import PackageScene from "../scenes/packageScene";
+import IPackageMesh from "./IPackageMesh";
 
-export default class Package {
+export default class PackageMesh implements IPackageMesh {
     public parentScene: PackageScene;
     private _lidMesh: any;
     private _meshes: Mesh[] = [];
@@ -24,6 +24,8 @@ export default class Package {
     private _lid_top_height = 3;
     private _open_package_height = this._closed_package_height - this._open_package_white_section_height;
 
+    public animation: any;
+
     constructor(parentScene: PackageScene) {
         this.parentScene = parentScene;
         this._material = new StandardMaterial('package_material', parentScene.scene);                         
@@ -33,8 +35,7 @@ export default class Package {
 
         this.buildMeshes();
         this.applyMaterialToMeshes();
-        // NEED TO MANAGE THIS IN SCENE
-        // this.createLidAnimation();
+        this.createLidAnimation();
     }
 
     // #region Corners
@@ -308,12 +309,18 @@ export default class Package {
             const frameRate = 30;        
             let startingPosition = 0;
             let rotation = -(this._rotation_90_in_radians);
-            this.createButtonsGUI({
+            this.animation = {
                 startingPosition: startingPosition,
                 rotation: rotation,
                 frameRate: frameRate,
                 mesh: this._lidMesh
-            });
+            };
+            // this.createButtonsGUI({
+            //     startingPosition: startingPosition,
+            //     rotation: rotation,
+            //     frameRate: frameRate,
+            //     mesh: this._lidMesh
+            // });
         }
     }
 

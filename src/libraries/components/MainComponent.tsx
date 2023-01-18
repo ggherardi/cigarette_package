@@ -43,7 +43,8 @@ export default class MainComponent extends React.Component<IMainComponentProps, 
 
     public render(): React.ReactElement<MainComponent> {
         return (
-            <div className='card-body px-4'>
+            <div className='card-body px-4' style={{textAlign: 'center'}}>
+                <h1>WORK IN PROGRESS!</h1>
                 {!this.state.isLoading && (<PackageComponent imageUrl={this.state.imageUrl}></PackageComponent>)}
             </div>
         );
