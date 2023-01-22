@@ -1,4 +1,4 @@
-import { Vector3 } from "@babylonjs/core";
+import { Mesh, Vector3 } from "@babylonjs/core";
 import { Button, StackPanel } from "@babylonjs/gui";
 
 export default class Utilities {
@@ -9,6 +9,10 @@ export default class Utilities {
         y: new Vector3(0, 1, 0),
         z: new Vector3(0, 0, 1)
     }
+
+    // public static rotateMesh180(mesh: Mesh) {
+    //     mesh.rotate(this.Vector3.z, 1);
+    // }
 
     public static addButtonToPanel(text: string, stackPanel: StackPanel, callback: any) {
         var button = Button.CreateSimpleButton('button', text);

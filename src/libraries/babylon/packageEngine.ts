@@ -45,16 +45,12 @@ export default class PackageEngine {
         this.openPackageScene = new OpenPackageScene(this);
 
         // run the main render loop
-        this.render(this.packageScene.scene);
+        this.render(this.openPackageScene.scene);
     }    
 
     private render(scene: Scene) {
         this.engine.runRenderLoop(() => scene.render())
     }
-
-    // public changeScene(scene: Scene) {
-    //     this.render(scene);
-    // }
     
     public changeScene(prevScene: IPackageScene, nextScene: IPackageScene) {
         this.render(nextScene.scene);
