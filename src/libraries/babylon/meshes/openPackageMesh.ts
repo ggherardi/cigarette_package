@@ -2,7 +2,7 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
 import earcut from 'earcut';
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Vector2, Mesh, PolygonMeshBuilder, PBRMaterial, Color3 } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Vector2, Mesh, PolygonMeshBuilder, PBRMaterial, Color3, ActionManager, ExecuteCodeAction, InterpolateValueAction } from "@babylonjs/core";
 import OpenPackageScene from "../scenes/openPackageScene";
 import Utilities from "../utilities";
 
@@ -26,10 +26,14 @@ export default class OpenPackageMesh {
     private _package_lid_top_mesh!: Mesh;
     private _package_lid_left_side_mesh!: Mesh;
     private _package_lid_right_side_mesh!: Mesh;
+    private _meshArray: Mesh[];
 
     constructor(parentScene: OpenPackageScene) {
         this.parentScene = parentScene;
+        this._meshArray = [];
         this.buildMeshes();
+        this.translateMeshes();
+        this.attachEventToMeshes();
     }
 
     private buildMeshes() {
@@ -40,8 +44,7 @@ export default class OpenPackageMesh {
         this._package_lid_front_mesh = this.buildLidFrontMesh();
         this._package_lid_left_side_mesh = this.buildLidSideMesh(this._side.left);
         this._package_lid_right_side_mesh = this.buildLidSideMesh(this._side.right);
-        this._package_lid_top_mesh = this.buildLideTopMesh();
-        this.translateMeshes();
+        this._package_lid_top_mesh = this.buildLideTopMesh();        
     }
 
     private buildFrontMesh(): Mesh {
@@ -129,8 +132,28 @@ export default class OpenPackageMesh {
         this._package_lid_top_mesh.translate(Utilities.Vector3.z, (this._package_front_height) + (this._lid_top_height) + (this._meshes_gap * 2))
     }
 
+    private attachEventToMeshes() {        
+        for (let i = 0; i < this._meshArray.length; i++) {
+            let mesh = this._meshArray[i];
+            mesh.actionManager = new ActionManager(this.parentScene.scene);
+            // mesh.actionManager.registerAction(
+            //     new InterpolateValueAction(
+            //         ActionManager.OnPickTrigger,
+            //         this.parentScene.light,
+            //         'diffuse',
+            //         Color3.Black(),
+            //         1000
+            //     )
+            // )
+            mesh.actionManager.registerAction(new ExecuteCodeAction({ trigger: ActionManager.OnPickTrigger },
+                (e) => { console.log(e); }))
+        }
+    }
+
     private buildSingleMesh(meshName: string, corners: any): Mesh {
         const mesh_builder = new PolygonMeshBuilder(meshName, corners, this.parentScene.scene, earcut);
-        return mesh_builder.build(false);
+        let mesh = mesh_builder.build(false);
+        this._meshArray.push(mesh);
+        return mesh;
     }
 }

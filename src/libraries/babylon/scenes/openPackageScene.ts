@@ -1,10 +1,10 @@
 import '@babylonjs/core/Debug/debugLayer';
 import '@babylonjs/inspector';
 import '@babylonjs/loaders/glTF';
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Animation } from '@babylonjs/core';
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Animation, ActionManager } from '@babylonjs/core';
 import { AdvancedDynamicTexture, Button, Control, StackPanel } from '@babylonjs/gui';
 import PackageEngine from '../packageEngine';
-import OpenPackageMesh from '../meshes/openPackage';
+import OpenPackageMesh from '../meshes/openPackageMesh';
 import Utilities from '../utilities';
 import IPackageScene from './IPackageScene';
 
@@ -17,7 +17,7 @@ export default class OpenPackageScene implements IPackageScene {
 
     constructor(engine: PackageEngine) {
         this.engine = engine;
-        this.scene = new Scene(engine.engine);
+        this.scene = new Scene(engine.engine);            
         this.defineStaticCamera('Camera', this.scene, engine.canvas);
         this.mesh = new OpenPackageMesh(this);
         this.createButtonsGUI();

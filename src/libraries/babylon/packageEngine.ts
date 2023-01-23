@@ -4,7 +4,7 @@ import '@babylonjs/loaders/glTF';
 import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Animation } from '@babylonjs/core';
 import PackageMesh from './meshes/package';
 import { AdvancedDynamicTexture, Button, Control, StackPanel } from '@babylonjs/gui';
-import OpenPackageMesh from './meshes/openPackage';
+import OpenPackageMesh from './meshes/openPackageMesh';
 import PackageScene from './scenes/packageScene';
 import OpenPackageScene from './scenes/openPackageScene';
 import IPackageScene from './scenes/IPackageScene';
