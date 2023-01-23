@@ -16,7 +16,7 @@ export default class OpenPackageMesh {
     private _package_height = 10;
     private _package_front_height = 8;
     private _open_package_white_section_height = 2;
-    private _open_package_height = this._package_height - this._open_package_white_section_height;
+    private _meshes_gap = 0.1;
 
     private _package_front_mesh!: Mesh;
     private _package_left_side_mesh!: Mesh;
@@ -37,7 +37,10 @@ export default class OpenPackageMesh {
         this._package_left_side_mesh = this.buildSideMesh(this._side.left);
         this._package_right_side_mesh = this.buildSideMesh(this._side.right);
         this._package_back_side_mesh = this.buildBackSideMesh();
-        this._package_lid_front_mesh = this.buildFrontLidMesh();
+        this._package_lid_front_mesh = this.buildLidFrontMesh();
+        this._package_lid_left_side_mesh = this.buildLidSideMesh(this._side.left);
+        this._package_lid_right_side_mesh = this.buildLidSideMesh(this._side.right);
+        this._package_lid_top_mesh = this.buildLideTopMesh();
         this.translateMeshes();
     }
 
@@ -63,7 +66,7 @@ export default class OpenPackageMesh {
                 new Vector2(0, this._package_front_height) :
                 new Vector2(0, this._package_height)
         ];
-        return this.buildSingleMesh('right_side_mesh', corners);
+        return this.buildSingleMesh(side == this._side.right ? 'right_side_mesh' : 'left_side_mesh', corners);
     }
 
     private buildBackSideMesh(): Mesh {
@@ -76,23 +79,54 @@ export default class OpenPackageMesh {
         return this.buildSingleMesh('back_side_mesh', corners);
     }
 
-    private buildFrontLidMesh(): Mesh {
+    private buildLidFrontMesh(): Mesh {
         let corners = [ 
             new Vector2(0, 0),
             new Vector2(this._package_width, 0),
             new Vector2(this._package_width, this._lid_top_height),
             new Vector2(0, this._lid_top_height)
         ];
-        return this.buildSingleMesh('front_lid_mesh', corners);
+        return this.buildSingleMesh('lid_front_mesh', corners);
+    }
+
+    private buildLidSideMesh(side: any): Mesh {
+        let isRightSide = side == this._side.right;
+        let corners = [ 
+            new Vector2(0, 0),
+            isRightSide ? 
+                new Vector2(this._package_depth, this._lid_top_height - this._lid_extra_height) :
+                new Vector2(-this._package_depth, this._lid_top_height - this._lid_extra_height),
+            isRightSide ?
+                new Vector2(this._package_depth, this._lid_top_height) :
+                new Vector2(-this._package_depth, this._lid_top_height),
+            new Vector2(0, this._lid_top_height)
+        ];
+        return this.buildSingleMesh(isRightSide ? 'lid_right_side_mesh' : 'lid_left_side_mesh', corners);
+    }
+
+    private buildLideTopMesh(): Mesh {
+        let corners = [ 
+            new Vector2(0, 0),
+            new Vector2(this._package_width, 0),
+            new Vector2(this._package_width, this._package_depth),
+            new Vector2(0, this._package_depth)
+        ];
+        return this.buildSingleMesh('lid_top_mesh', corners);
     }
 
     private translateMeshes() {
         this._package_front_mesh.translate(Utilities.Vector3.x, -this._package_width / 2);
-        this._package_left_side_mesh.translate(Utilities.Vector3.x, -(this._package_width / 2) - this._package_depth - 1);
-        this._package_right_side_mesh.translate(Utilities.Vector3.x, (this._package_width / 2) + 1);
-        this._package_back_side_mesh.translate(Utilities.Vector3.x, (this._package_width / 2) + this._package_depth + 2)
+        this._package_left_side_mesh.translate(Utilities.Vector3.x, -(this._package_width / 2) - this._package_depth - this._meshes_gap);
+        this._package_right_side_mesh.translate(Utilities.Vector3.x, (this._package_width / 2) + this._meshes_gap);
+        this._package_back_side_mesh.translate(Utilities.Vector3.x, (this._package_width / 2) + this._package_depth + (this._meshes_gap * 2))
         this._package_lid_front_mesh.translate(Utilities.Vector3.x, -this._package_width / 2);
-        this._package_lid_front_mesh.translate(Utilities.Vector3.z, (this._package_front_height) + 1);
+        this._package_lid_front_mesh.translate(Utilities.Vector3.z, (this._package_front_height) + this._meshes_gap);
+        this._package_lid_right_side_mesh.translate(Utilities.Vector3.z, (this._package_front_height) + this._meshes_gap)
+        this._package_lid_right_side_mesh.translate(Utilities.Vector3.x, (this._package_width / 2) + this._meshes_gap)
+        this._package_lid_left_side_mesh.translate(Utilities.Vector3.z, (this._package_front_height) + this._meshes_gap)
+        this._package_lid_left_side_mesh.translate(Utilities.Vector3.x, -(this._package_width / 2) - this._meshes_gap)
+        this._package_lid_top_mesh.translate(Utilities.Vector3.x, -(this._package_width / 2))
+        this._package_lid_top_mesh.translate(Utilities.Vector3.z, (this._package_front_height) + (this._lid_top_height) + (this._meshes_gap * 2))
     }
 
     private buildSingleMesh(meshName: string, corners: any): Mesh {
