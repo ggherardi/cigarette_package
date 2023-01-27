@@ -24,6 +24,14 @@ export default class PackageMesh implements IPackageMesh {
     private _lid_top_height = 3;
     private _open_package_height = this._closed_package_height - this._open_package_white_section_height;
 
+    public _package_front_mesh!: Mesh;
+    public _package_left_side_mesh!: Mesh;
+    public _package_right_side_mesh!: Mesh;
+    public _package_back_side_mesh!: Mesh;
+    public _package_lid_front_mesh!: Mesh;
+    public _package_lid_top_mesh!: Mesh;
+    public _package_lid_left_side_mesh!: Mesh;
+    public _package_lid_right_side_mesh!: Mesh;
     public animation: any;
 
     constructor(parentScene: PackageScene) {
@@ -315,12 +323,6 @@ export default class PackageMesh implements IPackageMesh {
                 frameRate: frameRate,
                 mesh: this._lidMesh
             };
-            // this.createButtonsGUI({
-            //     startingPosition: startingPosition,
-            //     rotation: rotation,
-            //     frameRate: frameRate,
-            //     mesh: this._lidMesh
-            // });
         }
     }
 

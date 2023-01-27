@@ -135,16 +135,7 @@ export default class OpenPackageMesh {
     private attachEventToMeshes() {        
         for (let i = 0; i < this._meshArray.length; i++) {
             let mesh = this._meshArray[i];
-            mesh.actionManager = new ActionManager(this.parentScene.scene);
-            // mesh.actionManager.registerAction(
-            //     new InterpolateValueAction(
-            //         ActionManager.OnPickTrigger,
-            //         this.parentScene.light,
-            //         'diffuse',
-            //         Color3.Black(),
-            //         1000
-            //     )
-            // )
+            mesh.actionManager = new ActionManager(this.parentScene.scene); 
             mesh.actionManager.registerAction(new ExecuteCodeAction({ trigger: ActionManager.OnPickTrigger },
                 (e) => { console.log(e); }))
         }
