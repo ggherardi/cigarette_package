@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import MainComponent from './libraries/components/MainComponent';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle';
+import 'bootstrap/dist/js/bootstrap';
+//@ts-ignore
+window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle.js');
 
 let isCreated = false;
 
