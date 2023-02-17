@@ -2,7 +2,7 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
 import earcut from 'earcut';
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Vector2, Mesh, PolygonMeshBuilder, PBRMaterial, Color3, ActionManager, ExecuteCodeAction, InterpolateValueAction } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Vector2, Mesh, PolygonMeshBuilder, PBRMaterial, Color3, ActionManager, ExecuteCodeAction, InterpolateValueAction, ActionEvent } from "@babylonjs/core";
 import OpenPackageScene from "../scenes/openPackageScene";
 import Utilities from "../utilities";
 
@@ -44,7 +44,7 @@ export default class OpenPackageMesh {
         this._package_lid_front_mesh = this.buildLidFrontMesh();
         this._package_lid_left_side_mesh = this.buildLidSideMesh(this._side.left);
         this._package_lid_right_side_mesh = this.buildLidSideMesh(this._side.right);
-        this._package_lid_top_mesh = this.buildLideTopMesh();        
+        this._package_lid_top_mesh = this.buildLidTopMesh();        
     }
 
     private buildFrontMesh(): Mesh {
@@ -107,7 +107,7 @@ export default class OpenPackageMesh {
         return this.buildSingleMesh(isRightSide ? 'lid_right_side_mesh' : 'lid_left_side_mesh', corners);
     }
 
-    private buildLideTopMesh(): Mesh {
+    private buildLidTopMesh(): Mesh {
         let corners = [ 
             new Vector2(0, 0),
             new Vector2(this._package_width, 0),
@@ -136,9 +136,15 @@ export default class OpenPackageMesh {
         for (let i = 0; i < this._meshArray.length; i++) {
             let mesh = this._meshArray[i];
             mesh.actionManager = new ActionManager(this.parentScene.scene); 
-            mesh.actionManager.registerAction(new ExecuteCodeAction({ trigger: ActionManager.OnPickTrigger },
-                (e) => { console.log(e); }))
+            mesh.actionManager.registerAction(new ExecuteCodeAction({ trigger: ActionManager.OnPickTrigger }, (e) => this.openModalForMesh(mesh)))
         }
+    }
+
+    private openModalForMesh(mesh: Mesh) {
+        console.log(mesh);
+        let anyWindow: any = window; 
+        let modal = new anyWindow.bootstrap.Modal(document.getElementById("exampleModal"));
+        modal.show();
     }
 
     private buildSingleMesh(meshName: string, corners: any): Mesh {
