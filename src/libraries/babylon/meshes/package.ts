@@ -326,48 +326,6 @@ export default class PackageMesh implements IPackageMesh {
         }
     }
 
-    private createButtonsGUI(customAnimObject: any) {
-        // Buttons
-        var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        var panel = new StackPanel();
-        panel.isVertical = false;
-        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;            
-        advancedTexture.addControl(panel);
-        var addButton = function (text: string, callback: any) {
-            var button = Button.CreateSimpleButton("button", text);
-            button.top = "-100px";
-            button.width = "140px";
-            button.height = "40px";
-            button.color = "white";
-            button.background = "green";
-            button.paddingLeft = "10px";
-            button.paddingRight = "10px";
-            button.onPointerUpObservable.add(function () {
-                callback()
-            });
-            panel.addControl(button);
-            return button;
-        }
-
-        let openButton = addButton("Chiudi", function () {
-            const endAnimationCallback = () => {
-                const tempStartingPosition = customAnimObject.startingPosition;
-                customAnimObject.startingPosition = customAnimObject.rotation;
-                customAnimObject.rotation = tempStartingPosition;
-                openButton.isEnabled = true;
-            }
-            Animation.CreateAndStartAnimation('anim', customAnimObject.mesh, 'rotation.x', customAnimObject.frameRate, customAnimObject.frameRate, customAnimObject.startingPosition, customAnimObject.rotation, 0, undefined, endAnimationCallback);
-            if (openButton.textBlock) {
-                openButton.textBlock.text = openButton.textBlock.text === "Apri" ? "Chiudi" : "Apri";
-            }
-            openButton.isEnabled = false;
-        });        
-        let uploadImage = addButton("Carica immagine", function () {
-            
-        });
-        uploadImage.isEnabled = false;
-    }
-
     private makeInsideMesh(mesh: Mesh, flipNormals: boolean = false): Mesh {
         let insideMesh = mesh.clone();
         insideMesh.makeGeometryUnique()

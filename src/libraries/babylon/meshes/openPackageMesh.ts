@@ -2,7 +2,7 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
 import earcut from 'earcut';
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Vector2, Mesh, PolygonMeshBuilder, PBRMaterial, Color3, ActionManager, ExecuteCodeAction, InterpolateValueAction, ActionEvent } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Vector2, Mesh, PolygonMeshBuilder, PBRMaterial, Color3, ActionManager, ExecuteCodeAction, InterpolateValueAction, ActionEvent, StandardMaterial, Texture } from "@babylonjs/core";
 import OpenPackageScene from "../scenes/openPackageScene";
 import Utilities from "../utilities";
 
@@ -143,7 +143,33 @@ export default class OpenPackageMesh {
     private openModalForMesh(mesh: Mesh) {
         console.log(mesh);
         let anyWindow: any = window; 
-        let modal = new anyWindow.bootstrap.Modal(document.getElementById("exampleModal"));
+        let modalElement = document.getElementById("exampleModal");
+        if (!modalElement) {
+            return;
+        }
+        let modal = new anyWindow.bootstrap.Modal(modalElement);        
+        modalElement.addEventListener('shown.bs.modal', () => {
+            let input: HTMLInputElement = document.getElementById("fileupload") as HTMLInputElement;
+            if (input) {
+                input.onchange = async (e: Event) => { 
+                    console.log(e, mesh); 
+                    let target: HTMLInputElement = e.target as HTMLInputElement;
+                    if (target) {
+                        let files = target.files;
+                        if (files?.length) {
+                            let file = files[0];                        
+                            let buffer = await file.arrayBuffer();                                
+                            let material = new StandardMaterial('package_material', this.parentScene.scene);                         
+                            // Removing reflection from material
+                            material.specularColor = new Color3(0, 0, 0);                    
+                            material.diffuseTexture = new Texture(`data:${file.name}`, this.parentScene.scene, true, true, Texture.BILINEAR_SAMPLINGMODE, () => console.log("Success"), (w) => console.log("Error!", e), buffer, false);
+                            mesh.material = material;
+                        }                        
+                    }                    
+           
+                }
+            }            
+        });
         modal.show();
     }
 
