@@ -40,6 +40,7 @@ export default class PackageMesh implements IPackageMesh {
         // Removing reflection from material
         this._material.specularColor = new Color3(0, 0, 0);
         this._material.diffuseTexture = new Texture(parentScene.engine.imageUrl, parentScene.scene);
+        
 
         this.buildMeshes();
         this.applyMaterialToMeshes();
@@ -161,22 +162,6 @@ export default class PackageMesh implements IPackageMesh {
         new Vector2(-(this._package_width / 2), 1)
     ];
     // #endregion
-
-    private buildRoundSection() {
-        // Package top side rounding function, WIP
-        let open_package_top_round_corners = [];
-        let j = 2.5;
-        const increment = 0.1;
-        const numberOfPoints = 20;
-
-        for(let i = 1; i < 1.5; i += increment) {        
-            let nextPoint = Math.abs((Math.log10(i + increment) - Math.log10(i)) - (Math.log10(i + increment * 2) - Math.log10(i + increment))) * 10; 
-            console.log(nextPoint);
-            open_package_top_round_corners.push(new Vector2(j, this._open_package_height - nextPoint));
-            j += increment;
-        }
-        console.log(open_package_top_round_corners);     
-    }
 
     private buildMeshes() {
         // Front        
@@ -307,7 +292,7 @@ export default class PackageMesh implements IPackageMesh {
             lid_top_cover_inside_mesh            
         ];
         this._lidMesh = Mesh.MergeMeshes(this._lidMeshes, true);
-        this._lidMesh.material = this._material;
+        // this._lidMesh.material = this._material;
     }
 
     private createLidAnimation() {

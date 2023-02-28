@@ -8,6 +8,7 @@ import Utilities from "../utilities";
 
 export default class OpenPackageMesh {
     public parentScene: OpenPackageScene;
+    public meshesTextures: any;
     private _side = { left: 'left', right: 'right'};
     private _package_width = 6;
     private _package_depth = 2.5;
@@ -34,6 +35,21 @@ export default class OpenPackageMesh {
         this.buildMeshes();
         this.translateMeshes();
         this.attachEventToMeshes();
+        
+        let material = new StandardMaterial(`new_material`, this.parentScene.scene);                         
+        // Removing reflection from material
+        material.specularColor = new Color3(0, 0, 0);                    
+        // material.diffuseTexture = new Texture(`data:${file.name}`, this.parentScene.scene, true, true, Texture.BILINEAR_SAMPLINGMODE, () => console.log("Success"), (w) => console.log("Error!", e), buffer, false);
+        material.emissiveColor = new Color3(1, 0, 0);
+        // material.diffuseTexture = new Texture('../../assets/images/6853dd80301a7b20b31a2cfa35c0e9d3.jpg', this.parentScene.scene);    
+        this._package_front_mesh.material = material;
+        this._package_left_side_mesh.material = material;
+        this._package_right_side_mesh.material = material;
+        this._package_back_side_mesh.material = material;
+        this._package_lid_front_mesh.material = material;
+        this._package_lid_left_side_mesh.material = material;
+        this._package_lid_right_side_mesh.material = material;
+        this._package_lid_top_mesh.material = material;
     }
 
     private buildMeshes() {
@@ -44,7 +60,7 @@ export default class OpenPackageMesh {
         this._package_lid_front_mesh = this.buildLidFrontMesh();
         this._package_lid_left_side_mesh = this.buildLidSideMesh(this._side.left);
         this._package_lid_right_side_mesh = this.buildLidSideMesh(this._side.right);
-        this._package_lid_top_mesh = this.buildLidTopMesh();        
+        this._package_lid_top_mesh = this.buildLidTopMesh();    
     }
 
     private buildFrontMesh(): Mesh {
@@ -159,10 +175,11 @@ export default class OpenPackageMesh {
                         if (files?.length) {
                             let file = files[0];                        
                             let buffer = await file.arrayBuffer();                                
-                            let material = new StandardMaterial('package_material', this.parentScene.scene);                         
+                            let material = new StandardMaterial(`${mesh.name}_material`, this.parentScene.scene);                         
                             // Removing reflection from material
-                            material.specularColor = new Color3(0, 0, 0);                    
-                            material.diffuseTexture = new Texture(`data:${file.name}`, this.parentScene.scene, true, true, Texture.BILINEAR_SAMPLINGMODE, () => console.log("Success"), (w) => console.log("Error!", e), buffer, false);
+                            // material.specularColor = new Color3(0, 0, 0);                    
+                            // material.diffuseTexture = new Texture(`data:${file.name}`, this.parentScene.scene, true, true, Texture.BILINEAR_SAMPLINGMODE, () => console.log("Success"), (w) => console.log("Error!", e), buffer, false);
+                            material.diffuseTexture = new Texture('../../assets/images/6853dd80301a7b20b31a2cfa35c0e9d3.jpg', this.parentScene.scene);
                             mesh.material = material;
                         }                        
                     }                    
